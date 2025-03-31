@@ -155,3 +155,29 @@ if (token) {
       alert("An error occurred during email verification.");
     });
 }
+
+// Handle hash based routing if present
+if (window.location.hash) {
+  const hashParams = new URLSearchParams(window.location.hash.substring(1)); // Remove the '#'
+  const accessToken = hashParams.get('access_token');
+  const expiresIn = hashParams.get('expires_at');
+  const refreshToken = hashParams.get('refresh_token');
+  const tokenType = hashParams.get('token_type');
+
+  if (accessToken && expiresIn && refreshToken && tokenType) {
+    supabase.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      token_type: tokenType,
+      expires_in: parseInt(expiresIn) - Math.floor(Date.now() / 1000), // Calculate remaining time
+    }).then(({ error }) => {
+      if (error) {
+        console.error('Error setting session:', error);
+        alert('Authentication failed.');
+      } else {
+        console.log('Session set successfully.');
+        window.location.href = 'https://s-mukherjeenius.github.io/cbone/'; // Redirect to your app's home page
+      }
+    });
+  }
+}
