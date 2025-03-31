@@ -147,7 +147,7 @@ if (token) {
         console.log("Email confirmed:", data);
         alert("Email confirmed successfully!");
         // Redirect to login or appropriate page after confirmation.
-        window.location.href = "/"; // Change to your desired redirect URL
+        window.location.href = "https://s-mukherjeenius.github.io/cbone/"; // Change to your desired redirect URL
       }
     })
     .catch((err) => {
