@@ -39,25 +39,52 @@ function subscribeToIncomingMessages(currentUID) {
 }
 
 // Attach functions to window so they are globally available
-window.register = async function () {
-  const email = document.getElementById("registerEmail").value;
-  const password = document.getElementById("registerPassword").value;
+window.registerUser = async function () {
+  const email = document.getElementById("register-email").value;
+  const password = document.getElementById("register-password").value;
+  const username = document.getElementById("register-username").value;
+  const profilePictureInput = document.getElementById("profile-picture");
+  const profilePictureFile = profilePictureInput.files[0];
 
   try {
-    const { data, error } = await supabase.auth.signUp({
+    let profilePictureUrl = null;
+
+    if (profilePictureFile) {
+      const { data, error: uploadError } = await supabase.storage
+        .from("profile-pictures")
+        .upload(`profilePictures/${Date.now()}_${profilePictureFile.name}`, profilePictureFile, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (uploadError) {
+        console.error("Profile picture upload error:", uploadError);
+        alert("Failed to upload profile picture.");
+        return; // Stop registration if upload fails
+      }
+
+      profilePictureUrl = supabase.storage.from("profile-pictures").getPublicUrl(data.path).data.publicUrl;
+    }
+
+    const { data, error: signUpError } = await supabase.auth.signUp({
       email: email,
       password: password,
       options: {
-        emailRedirectTo: "https://s-mukherjeenius.github.io/cbone", // Add this line
+        data: {
+          username: username,
+          profilePicture: profilePictureUrl,
+        },
+        emailRedirectTo: "https://s-mukherjeenius.github.io/cbone",
       },
     });
 
-    if (error) {
-      console.error("Registration error:", error);
-      alert("Registration failed: " + error.message);
+    if (signUpError) {
+      console.error("Registration error:", signUpError);
+      alert("Registration failed: " + signUpError.message);
     } else {
       console.log("Registration successful:", data);
       alert("Registration successful! Please check your email.");
+      window.location.href = "index.html"; // redirect to login.
     }
   } catch (err) {
     console.error("Error during registration:", err);
@@ -84,7 +111,7 @@ window.login = async function () {
       authSection.style.display = "none";
       chatSection.style.display = "block";
       console.log(
-        "Chat section displayed. Computed style:",
+        "Chat section displayed.Computed style:",
         window.getComputedStyle(chatSection).display
       );
 
