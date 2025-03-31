@@ -1,4 +1,3 @@
-// main.js
 import { login, deleteAccount, setCurrentUser } from "./auth.js";
 import { 
   loadConversations, 
@@ -8,6 +7,35 @@ import {
   clearChat 
 } from "./chat-part1.js";
 import { updateTypingStatus, listenForTypingStatus } from "./chat-part2.js";
+import supabase from "./supabaseClient.js"; // needed for realtime subscription
+
+let messagesSubscription = null;
+
+function subscribeToIncomingMessages(currentUID) {
+  // Unsubscribe if an existing subscription exists
+  if (messagesSubscription) {
+    messagesSubscription.unsubscribe();
+  }
+  
+  // Subscribe to INSERT events on the "messages" table where sender is NOT the current user.
+  messagesSubscription = supabase.channel(`incoming-messages-${currentUID}`)
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages',
+        // Filter for messages not sent by the current user.
+        filter: `sender=neq.${currentUID}`
+      },
+      payload => {
+        console.log("New incoming message detected:", payload);
+        // Refresh the contacts list if a new message from another user is received.
+        loadConversations();
+      }
+    )
+    .subscribe();
+}
 
 // Attach functions to window so they are globally available
 window.register = function () {
@@ -44,6 +72,10 @@ window.login = async function () {
       // Load conversations (populate contacts sidebar)
       await loadConversations();
       console.log("Conversations loaded.");
+      
+      // Subscribe to incoming messages for refreshing contacts only on new messages from others
+      subscribeToIncomingMessages(user.id);
+      console.log("Subscribed to incoming messages realtime updates.");
     }
   } catch (error) {
     console.error("Login failed:", error);
