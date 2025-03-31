@@ -1,10 +1,10 @@
 import { login, deleteAccount, setCurrentUser } from "./auth.js";
-import { 
-  loadConversations, 
-  selectChat, 
-  startChatWithSearchedUser, 
-  sendMessage, 
-  clearChat 
+import {
+  loadConversations,
+  selectChat,
+  startChatWithSearchedUser,
+  sendMessage,
+  clearChat,
 } from "./chat-part1.js";
 import { updateTypingStatus, listenForTypingStatus } from "./chat-part2.js";
 import supabase from "./supabaseClient.js"; // needed for realtime subscription
@@ -16,19 +16,20 @@ function subscribeToIncomingMessages(currentUID) {
   if (messagesSubscription) {
     messagesSubscription.unsubscribe();
   }
-  
+
   // Subscribe to INSERT events on the "messages" table where sender is NOT the current user.
-  messagesSubscription = supabase.channel(`incoming-messages-${currentUID}`)
+  messagesSubscription = supabase
+    .channel(`incoming-messages-${currentUID}`)
     .on(
-      'postgres_changes',
+      "postgres_changes",
       {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'messages',
+        event: "INSERT",
+        schema: "public",
+        table: "messages",
         // Filter for messages not sent by the current user.
-        filter: `sender=neq.${currentUID}`
+        filter: `sender=neq.${currentUID}`,
       },
-      payload => {
+      (payload) => {
         console.log("New incoming message detected:", payload);
         // Refresh the contacts list if a new message from another user is received.
         loadConversations();
@@ -38,41 +39,94 @@ function subscribeToIncomingMessages(currentUID) {
 }
 
 // Attach functions to window so they are globally available
-window.register = function () {
-  window.location.href = "register.html";
+window.registerUser = async function () {
+  const email = document.getElementById("register-email").value;
+  const password = document.getElementById("register-password").value;
+  const username = document.getElementById("register-username").value;
+  const profilePictureInput = document.getElementById("profile-picture");
+  const profilePictureFile = profilePictureInput.files[0];
+
+  try {
+    let profilePictureUrl = null;
+
+    if (profilePictureFile) {
+      const { data, error: uploadError } = await supabase.storage
+        .from("profile-pictures")
+        .upload(`profilePictures/${Date.now()}_${profilePictureFile.name}`, profilePictureFile, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (uploadError) {
+        console.error("Profile picture upload error:", uploadError);
+        alert("Failed to upload profile picture.");
+        return; // Stop registration if upload fails
+      }
+
+      profilePictureUrl = supabase.storage.from("profile-pictures").getPublicUrl(data.path).data.publicUrl;
+    }
+
+    const { data, error: signUpError } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        data: {
+          username: username,
+          profilePicture: profilePictureUrl,
+        },
+        emailRedirectTo: "https://s-mukherjeenius.github.io/cbone",
+      },
+    });
+
+    if (signUpError) {
+      console.error("Registration error:", signUpError);
+      alert("Registration failed: " + signUpError.message);
+    } else {
+      console.log("Registration successful:", data);
+      alert("Registration successful! Please check your email.");
+      window.location.href = "index.html"; // redirect to login.
+    }
+  } catch (err) {
+    console.error("Error during registration:", err);
+    alert("An unexpected error occurred.");
+  }
 };
 
 window.login = async function () {
   const email = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
   console.log("Login button clicked with email:", email);
-  
+
   try {
     // Call the login function from auth.js
     const user = await login(email, password);
-    
+
     if (user) {
       console.log("Login successful. User:", user);
       setCurrentUser(user);
-      
+
       // Hide authentication section and show chat section
       const authSection = document.getElementById("auth-section");
       const chatSection = document.getElementById("chat-section");
       authSection.style.display = "none";
       chatSection.style.display = "block";
-      console.log("Chat section displayed. Computed style:", window.getComputedStyle(chatSection).display);
-      
+      console.log(
+        "Chat section displayed.Computed style:",
+        window.getComputedStyle(chatSection).display
+      );
+
       // Set current user display name
-      const displayName = (user.user_metadata && user.user_metadata.username)
-        ? user.user_metadata.username
-        : user.email;
+      const displayName =
+        user.user_metadata && user.user_metadata.username
+          ? user.user_metadata.username
+          : user.email;
       document.getElementById("currentUser").textContent = displayName;
       console.log("Current user display name set to:", displayName);
-      
+
       // Load conversations (populate contacts sidebar)
       await loadConversations();
       console.log("Conversations loaded.");
-      
+
       // Subscribe to incoming messages for refreshing contacts only on new messages from others
       subscribeToIncomingMessages(user.id);
       console.log("Subscribed to incoming messages realtime updates.");
@@ -89,15 +143,15 @@ window.startChatWithSearchedUser = startChatWithSearchedUser;
 window.sendMessage = function () {
   const input = document.getElementById("messageInput");
   const message = input.value.trim();
-  
+
   if (message === "") {
     alert("Message cannot be empty.");
     return;
   }
-  
+
   sendMessage(message);
   input.value = "";
-  
+
   if (window.chatWith) {
     updateTypingStatus(window.chatWith, false);
   }
@@ -111,18 +165,42 @@ let isTyping = false;
 
 messageInput.addEventListener("input", () => {
   if (!window.chatWith) return;
-  
+
   if (!isTyping) {
     updateTypingStatus(window.chatWith, true);
     isTyping = true;
     console.log("User started typing...");
   }
-  
+
   clearTimeout(typingTimeout);
-  
+
   typingTimeout = setTimeout(() => {
     updateTypingStatus(window.chatWith, false);
     isTyping = false;
     console.log("User stopped typing.");
   }, 2000);
 });
+
+// Handle email confirmation if token_hash is present in the URL.
+const params = new URLSearchParams(window.location.search);
+const token = params.get("token_hash");
+
+if (token) {
+  supabase.auth
+    .verifyEmail({ token: token })
+    .then(({ data, error }) => {
+      if (error) {
+        console.error("Email confirmation error:", error);
+        alert("Email confirmation failed.");
+      } else {
+        console.log("Email confirmed:", data);
+        alert("Email confirmed successfully!");
+        // Redirect to login or appropriate page after confirmation.
+        window.location.href = "https://s-mukherjeenius.github.io/cbone/"; // Change to your desired redirect URL
+      }
+    })
+    .catch((err) => {
+      console.error("Error during email verification:", err);
+      alert("An error occurred during email verification.");
+    });
+}
