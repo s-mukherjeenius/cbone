@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="Chatterbox.png" />
+  <title>Register - Chatter Box</title>
+  <!-- Main CSS file -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <br><br><br>
+  <h2>Sign Up!</h2>
+
+  <div class="register-background">
+    <div id="register-section">
+      <input type="email" id="register-email" placeholder="Enter Email" />
+      <input type="text" id="register-username" placeholder="Create Username" />
+      <input type="password" id="register-password" placeholder="Create Password" />
+      <input type="password" id="register-confirm-password" placeholder="Confirm Password" />
+      <!-- New Profile Picture Input -->
+      <input type="file" id="profile-picture" accept="image/*" />
+    </div>
+  
+    <div>
+      <button id="signup-button" onclick="registerUser()">Sign Up</button> <br>
+      <!-- Back button to return to the login page -->
+      <button class="backtologin" onclick="window.location.href='index.html'">Back to Login</button>
+    </div>
+  </div>
+  <!-- Register Section -->
+  
+
+  <!-- Load register.js for registration logic -->
+  <script type="module" src="./js/register.js"></script>
+
+</body>
+</html>

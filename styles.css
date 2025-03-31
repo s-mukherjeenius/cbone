@@ -1,0 +1,397 @@
+/* Global Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1e1e2f;
+    color: white;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  h2 {
+    margin-bottom: 20px;
+  }
+  
+  /* Authentication Section */
+  #auth-section {
+    background: #2a2a3a;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 300px;
+    margin: auto;
+  }
+  
+  /* Inputs & Buttons */
+  input {
+    width: 90%;
+    padding: 10px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    background: #333;
+    color: white;
+  }
+  
+  button {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: none;
+    background: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s;
+  }
+  
+  button:hover {
+    background: #0056b3;
+  }
+  
+  /* Chat Section */
+  #chat-section {
+    margin: 20px auto;
+    max-width: 1200px;
+  }
+  
+  /* Chat Container (WhatsApp-style split screen) */
+  #chat-container {
+    display: flex;
+    height: 80vh;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  
+    /* Let flex items shrink below their min-content width */
+    min-width: 0;
+    /* Hide any horizontal overflow */
+    overflow-x: hidden;
+  }
+  
+  /* Contacts Sidebar */
+  #contacts {
+    width: 30%;
+    background: #2a2a3a;
+    /* Remove forced scrolling by default */
+    overflow-y: visible;
+    padding: 10px;
+    padding-bottom: 20px; /* Extra bottom padding */
+    box-sizing: border-box;
+    text-align: left;
+  }
+  
+  /* Search input for filtering contacts or entering a username */
+  #contactSearch {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    background: #444;
+    color: white;
+  }
+  
+  /* Individual Contact */
+  .contact {
+    padding: 15px;
+    border-bottom: 1px solid #444;
+    cursor: pointer;
+  }
+  
+  .contact:hover {
+    background-color: #3a3a4a;
+  }
+  
+  /* Conversation Area */
+  #conversation {
+    /* Remove flex-grow to prevent automatic resizing */
+    /* flex-grow: 1; // remove or comment out this line */
+  
+    display: flex;
+    flex-direction: column;
+    background: #e5ddd5;
+  
+    /* Set a fixed width so it doesn't expand/shrink */
+    width: 70%; 
+    /* or width: 600px; or any fixed size you prefer */
+  
+    /* Optionally, set a fixed height if desired */
+    /* height: 600px; */
+  
+    /* Keep horizontal overflow hidden */
+    overflow-x: hidden;
+    
+    /* Let long text wrap properly */
+    min-width: 0;
+  }
+  
+  
+  
+  /* Conversation Header */
+  #conversation-header {
+    padding: 15px;
+    background: #075e54;
+    color: white;
+    font-size: 18px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* This puts the name on the left and image on the right */
+  }
+
+  #conversation-header .friend-name {
+    margin-right: 10px;
+  }
+
+  .profile-pic {
+    width: 40px;           /* Adjust size as needed */
+    height: 40px;
+    border-radius: 50%;    /* Makes the image circular */
+    object-fit: cover;     /* Ensures the image covers the circle */
+    border: 2px solid #fff;/* Optional: add a border around the image */
+  }
+  
+  /* Chat Box (Messages Area) */
+  #chat-box {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background: #f0f0f0;
+    overflow-y: auto;     /* Single scrollbar here */
+    overflow-x: hidden;   /* Hide horizontal overflow */
+    min-width: 0;         /* Allows flex items to shrink if needed */
+  }
+  
+  
+  /* Chat Messages */
+  .message {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 7.5px;
+    max-width: 50%;
+    text-align: left;
+    line-height: 20px;
+    
+    /* Ensures long text wraps */
+    word-break: break-all; 
+    overflow-wrap:anywhere; 
+    white-space: normal;
+    
+    color: #000;
+    /* No individual scrolling here */
+  }
+  
+  
+  
+  
+  
+  
+  /* User's Messages (aligned to right) */
+  .user {
+    background: #daf8e3;  /* Soft light green for sent messages */
+    align-self: flex-end;
+  }
+  
+  /* Other User's Messages (aligned to left) */
+  .other {
+    background: #fff;  /* White background for received messages */
+    align-self: flex-start;
+  }
+  
+  /* Message Area */
+  #message-area {
+    display: flex;
+    gap: 10px;  /* Adds spacing between input and buttons */
+    padding: 10px;
+    background: #f0f0f0;
+    box-sizing: border-box;
+  }
+  
+  #messageInput {
+    flex-grow: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    outline: none;
+    background: #fff;
+    color: #000;
+    margin-right: 10px;
+    resize: none;       /* Prevents manual resizing */
+    overflow: auto;      /* Enables scrolling if content exceeds height */
+    max-height: 150px;   /* Set a maximum height (adjust as needed) */
+    line-height: 1.5;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  
+  
+  #message-area button {
+    width: auto;
+    padding: 12px 20px;
+    background: #007bff;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s;
+  }
+  
+  #message-area button:hover {
+    background: #0056b3;
+  }
+
+  #register-section {
+    max-width: 400px;
+    margin: 0 auto; /* Centers the div horizontally */
+}
+
+  #contactSearch{
+    width: 95%;
+  }
+
+
+.register-background{
+    background-color: #2a2a3a;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 300px;
+    margin: auto;
+}
+
+
+  /* Timestamp styling for messages */
+  .timestamp {
+    display: block;
+    font-size: 0.75rem;
+    color: gray;
+    text-align: right;
+    margin-top: 5px;
+  }
+
+  /* Date divider styling (if implemented) */
+.date-divider {
+    width: 100%;
+    text-align: center;
+    margin: 10px 0;
+    font-size: 0.85rem;
+    color: #555;
+    border-bottom: 1px solid #ccc;
+    line-height: 1;
+  }
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  .username-header {
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-bottom: 10px;  /* Add this line to create space */
+    color: #555;
+    display: inline-block;
+    padding: 2px 8px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+  }
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  /* Responsive Styles for Mobile */
+@media (max-width: 600px) {
+  /* Stack chat container vertically */
+  #chat-container {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  /* Contacts sidebar becomes full width, extra bottom padding added */
+  #contacts {
+    width: 100%;
+    max-height: none; /* Remove fixed max-height */
+    margin-bottom: 10px; /* Space between contacts and conversation area */
+    overflow-y: visible; /* Show all contacts unless too many exist */
+  }
+  
+  /* Conversation area takes full width */
+  #conversation {
+    width: 100%;
+  }
+  
+  /* Reduce padding and font sizes for small screens */
+  #conversation-header {
+    font-size: 16px;
+    padding: 10px;
+  }
+  
+  /* Reduce profile picture size on mobile */
+  .profile-pic {
+    width: 30px;
+    height: 30px;
+  }
+  
+  /* Fix chat-box height with scroll */
+  #chat-box {
+    padding: 10px;
+    height: 50vh; /* Set fixed height for messages area on mobile */
+    overflow-y: auto;
+  }
+  
+  /* Adjust message area layout */
+  #message-area {
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px;
+  }
+  
+  #messageInput {
+    margin-right: 0;
+  }
+  
+  #message-area button {
+    font-size: 14px;
+    padding: 10px;
+  }
+}

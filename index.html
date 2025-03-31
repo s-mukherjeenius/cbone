@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chatter Box</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="Chatterbox.png" />
+  <!-- Main CSS file -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <br>
+  <h2>Chatter Box</h2>
+
+  <!-- Login / Register Section -->
+  <div id="auth-section">
+    <input type="text" id="username" placeholder="Enter Email" />
+    <input type="password" id="password" placeholder="Enter Password" />
+    <!-- Ensure the functions login() and register() are globally available -->
+    <button onclick="login()">Login</button>
+    <button onclick="register()">Register</button>
+  </div>
+
+  <!-- Chat Section (hidden until user logs in) -->
+  <div id="chat-section" style="display: none;">
+    <h3>Logged in as: <span id="currentUser"></span></h3>
+    
+    <div id="chat-container">
+      <!-- Contacts Sidebar (dynamically populated) -->
+      <div id="contacts"></div>
+      <!-- Conversation Area -->
+      <div id="conversation">
+        <div id="conversation-header">Select a contact to chat</div>
+        <div id="chat-box"></div>
+        <!-- Typing Indicator -->
+        <div id="typingIndicator" style="font-style: italic; color: gray; padding: 5px;"></div>
+        <div id="message-area">
+          <textarea id="messageInput" placeholder="Type a message..."></textarea>
+          <button onclick="sendMessage()">Send</button>
+          <button id="clear-chat" onclick="clearChat()">Clear Chat</button>
+        </div>
+      </div>
+    </div>
+    <br><br>
+    <!-- Logout and Delete Account buttons -->
+    <button onclick="window.location.href='index.html'">Logout</button>
+    <button id="delete-account" onclick="deleteAccount()">Delete Account</button>
+  </div>
+
+  <!-- Load main.js from the js folder (make sure it attaches required functions to window) -->
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>
